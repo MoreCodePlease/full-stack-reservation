@@ -13,9 +13,10 @@ function listDateOf(date) {
 }
 
 function read(record) {
-  return knex("reservations").select("*")
-      .where({reservation_id: record})
-      .then((response) => response[0]);
+  return knex("reservations")
+    .select("*")
+    .where({ reservation_id: record })
+    .then((response) => response[0]);
 }   
 
 function create(reserve) {
@@ -23,12 +24,28 @@ function create(reserve) {
     .returning("*").then((newReserve) => newReserve[0])
 }
 
-function update(reservation) {
+function updateRes(res) {
   return knex("reservations")
     .select("*")
-    .where({ reservation_id: reservation.reservation_id })
-    .update(reservation, "*")
+    .where({ reservation_id: res.reservation_id })
+    .update(res, "*")
     .then((response) => response[0]);
+}
+
+function updateStatus(res_id, res_status) {
+  return knex("reservations")
+    .where({reservation_id: res_id})
+    .update({ status: res_status}, "*")
+    .then((response) => response[0]);
+}
+
+function search(mobile_number) {
+  return knex("reservations")
+    .whereRaw(
+      "translate(mobile_number, '() -', '') like ?",
+      `%${mobile_number.replace(/\D/g, "")}%`
+    )
+    .orderBy("reservation_date");
 }
 
 module.exports = {
@@ -36,5 +53,7 @@ module.exports = {
   listDateOf,
   read,
   create,
-  update,
+  updateRes,
+  updateStatus,
+  search
 }

@@ -127,8 +127,8 @@ module.exports = {
   ],
   update: [validExistingProperties(propertiesTemplate),
     validBodyProperty(["reservation_id"]),
-    tableExists,
-    reservationExists,
+    asyncErrorBoundary(tableExists),
+    asyncErrorBoundary(reservationExists),
     validBooked,
     validPeopleCapacity,
     validIsEmpty,
@@ -136,12 +136,12 @@ module.exports = {
     asyncErrorBoundary(updateTableData)
   ],
   destroySeat: [ 
-    tableExists,
+    asyncErrorBoundary(tableExists),
     validIsFull,
     asyncErrorBoundary(deleteSeating)
   ],
   destroyTable: [
-    tableExists,
+    asyncErrorBoundary(tableExists),
     asyncErrorBoundary(deleteTable)
   ]
 }

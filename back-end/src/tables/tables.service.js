@@ -16,8 +16,7 @@ function readTable(record) {
       .then((response) => response[0]);
 } 
 function readReservation(record) {
-  return knex("reservations")
-      .select("*")
+  return knex("reservations").select("*")
       .where({reservation_id: record})
       .then((response) => response[0]);
 } 

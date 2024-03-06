@@ -79,7 +79,7 @@ function validResTime (req, res, next) {
 }
 function validPhone(req, res, next) {
   const { mobile_number } = req.body.data;
-  const isValid = mobile_number.match(/^[1-9]\d{2}-\d{3}-\d{4}$/);
+  const isValid = mobile_number.match(/^(\d{10}|\d{3}[-\s]?\d{3}[-\s]?\d{4})$/);
   return (isValid)? next():next({status: 400,message: `${mobile_number} is not a valid phone number.`});
 }
 function validPeople(req,res,next) {
@@ -90,22 +90,29 @@ function validPeople(req,res,next) {
 
  
 }
+async function reservationExists(req, res, next) {
+  const { reservation_id } = req.params;
+  const existingReservation = await service.read(reservation_id);
+  if (existingReservation) {
+    res.locals.reservation = existingReservation;
+    return next();
+  }
+  next({status:404, message:`reservation id not found: ${reservation_id}`});
+}//res.locals.reservation
+function validStatus(req,res,next) {
+  const { status } = req.body.data;
+  (expectedStatus.includes(status))? next():next({status: 400, message: `"status:${status}" is not valid.`});
+}
 function validInitialStatus(req,res,next) {
   const {status} = req.body.data;
   if(status && status !== "booked") return next({status:400, message: `${status} is an incorrect status`})
   next();
 }
-function validStatus(req,res,next) {
-  const { status } = req.body.data;
-  (expectedStatus.includes(status))? next():next({status: 400, message: `"${status}" status is not valid.`});
-}
-async function reservationExists(req, res, next) {
-  const { reservation_id } = req.params;
-  const existingReservation = await service.read(reservation_id);
-  if (!existingReservation) return next({status:404, message:`reservation id not found: ${reservation_id}`})
-  res.locals.reservation = existingReservation;
+function validFinished(req, res, next) {
+  const {status} =res.locals.reservation;
+  if(status === "finished")return next({status:400, message:`a finished status cannot be updated.`}) 
   next();
-}//res.locals.reservation
+}
 
 /** CRUD functions */
 async function list(req, res) {
@@ -126,11 +133,17 @@ async function read(req, res) {
   res.json({ data });
 }
 async function update(req, res) {
-  const inbound = req.body.data;
-  const current_id = res.locals.reservation;
-  const updated = {...inbound,reservation_id: current_id };
-  const data = await service.update(updated);
+  const rez = req.body.data;
+  const rez_id = res.locals.reservation.reservation_id
+  const uRez = {...rez, reservation_id:rez_id}
+  const data = await service.updateRes(uRez);
   res.status(200).json({ data });
+}
+async function updateStatus(req, res) {
+  const {reservation_id} = res.locals.reservation;
+  const { status } = req.body.data;
+  const data = await service.updateStatus(reservation_id, status);
+  res.json({data});
 }
 
 module.exports = {
@@ -162,5 +175,11 @@ module.exports = {
     validPhone,
     validPeople,
     asyncErrorBoundary(update)
+  ],
+  updateStatus: [asyncErrorBoundary(reservationExists),
+    validExistingProperties(propertiesTemplate),
+    validStatus,
+    validFinished,
+    asyncErrorBoundary(updateStatus)
   ]
 };
