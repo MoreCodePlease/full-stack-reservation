@@ -3,10 +3,8 @@
  */
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-/**
- * Validator functions
- */
-const expectedNewProperties = [
+/** Validating functions */
+const propertiesNew = [
   "first_name",
   "last_name",
   "mobile_number",
@@ -14,7 +12,7 @@ const expectedNewProperties = [
   "reservation_time",
   "people"
 ];
-const expectedExistingProperties = [
+const propertiesTemplate = [
   "reservation_id",
   "first_name",
   "last_name",
@@ -32,34 +30,35 @@ const expectedStatus = [
   "finished",
   "cancelled"
 ];
-function validNewProperties() {
+function validBodyProperty(property) {
+  return function validateProperty(req, res, next) {
+    const { data = {} } = req.body;
+    for(let item of property) {
+      if (!data[item]) return next({ status: 400, message: `missing: ${item}` });
+    }
+    next();
+  };
+}
+function validExistingProperties(property) {
   return function (req, res, next) {
     const { data = {} } = req.body;
-    for(let i=0; i< expectedNewProperties.length; i++) {
-      if(!data[expectedNewProperties[i]]) return next({status: 400,message: `${expected} is required.`});
+    for(let key of Object.keys(data)) {
+      if (!property.includes(key)) return next({ status: 400, message: `invalid field: ${key}` });
     }
     next();
   }
-}
-function validExistingProperties() {
-  const { data = {} } = req.body;
-  const invalidProperties =[];
-  for (let key in data) {
-    if(!expectedExistingProperties.includes(key)) invalidProperties.push(key);
-  }
-  return (!invalidProperties.length)? next(): next({status:400,message:`${invalidFields.join(", ")} are not valid fields.`})
-
-}
+};
 function validDate(req,res,next) {
   const { reservation_date } = req.body.data;
-  const isValid = isNaN(Date.parse(reservation_date));
-  return (isValid)? next():next({status: 400,message: `${reservation_date} is not a valid date.`});
+  const isValid = Date.parse(reservation_date);
+  if (!Number.isNaN(isValid)) return next();
+  next({status: 400,message: `reservation_date is not a valid date.`});
 }
 function validTime(req,res,next) {
   const { reservation_time } = req.body.data;
   const isValid = reservation_time.match(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/);
   if (isValid) res.locals.reservation_time = reservation_time;
-  return (isValid)? next(): next({status: 400, message: `${reservation_time} is not a valid time.` });
+  return (isValid)? next(): next({status: 400, message: `reservation_time is not a valid time.` });
 }//res.locals.reservation_time
 function validPresent(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
@@ -68,7 +67,7 @@ function validPresent(req, res, next) {
     res.locals.validDateTime = new Date(`${reservation_date} ${reservation_time}`);
     return next()
   }
-  next({status: 400, message: "Cannot book reservation in the past."});
+  next({status: 400, message: "only future date/time is valid."});
 }//res.locals.validDateTime
 function validResDay (req, res, next) {
   const {validDateTime} = res.locals;
@@ -80,19 +79,21 @@ function validResTime (req, res, next) {
 }
 function validPhone(req, res, next) {
   const { mobile_number } = req.body.data;
-  const isNum = !isNAN(Number(mobile_number.replace(/[ ,]/g, "")));
   const isValid = mobile_number.match(/^[1-9]\d{2}-\d{3}-\d{4}$/);
-  return (isValid && isNum)? next():next({status: 400,message: `${mobile_number} is not a valid phone number.`});
+  return (isValid)? next():next({status: 400,message: `${mobile_number} is not a valid phone number.`});
 }
 function validPeople(req,res,next) {
   let { people } = req.body.data;
-  const isValid = !isNaN(people);
-  return (isValid && people >= 1 )? next(): next({status: 400, message: `${people} is not a valid number.` });
+  const peopleType = typeof people;
+  if(peopleType === "number" && people >= 1) return next();
+  else return next({status: 400, message: `Needs a valid number of people.` });
+
+ 
 }
 function validInitialStatus(req,res,next) {
   const {status} = req.body.data;
-  if(status === "booked") return next();
-  next({status:400, message: `${status} is an incorrect status`})
+  if(status && status !== "booked") return next({status:400, message: `${status} is an incorrect status`})
+  next();
 }
 function validStatus(req,res,next) {
   const { status } = req.body.data;
@@ -101,22 +102,18 @@ function validStatus(req,res,next) {
 async function reservationExists(req, res, next) {
   const { reservation_id } = req.params;
   const existingReservation = await service.read(reservation_id);
-  if (!existingReservation) return next({status:404, message:`Reservation ${reservation_id} cannot be found.`})
+  if (!existingReservation) return next({status:404, message:`reservation id not found: ${reservation_id}`})
   res.locals.reservation = existingReservation;
   next();
 }//res.locals.reservation
 
-/**
- * CRUDL functions
- */
-
+/** CRUD functions */
 async function list(req, res) {
-  const {date} = req.query;
-  if(date) {
-    data =await service.listResOn(date);
-  } else {
-    data = await service.list();
-  }
+  const { date, mobile_number } = req.query;
+  let data;
+  if (date) data = await service.listDateOf(date);
+  else if (mobile_number) data = await service.search(mobile_number);
+  else data = await service.list();
   res.status(200).json({ data });
 }
 async function create(req, res, next) {
@@ -125,7 +122,7 @@ async function create(req, res, next) {
   res.status(201).json({data})
 }
 async function read(req, res) {
-  const {reservation: data } = res.locals;
+  const { reservation: data } = res.locals;
   res.json({ data });
 }
 async function update(req, res) {
@@ -138,8 +135,8 @@ async function update(req, res) {
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
-  create: [validExistingProperties,
-    validNewProperties,
+  create: [validExistingProperties(propertiesTemplate),
+    validBodyProperty(propertiesNew),
     validInitialStatus,
     validDate,
     validTime,
@@ -154,8 +151,8 @@ module.exports = {
     asyncErrorBoundary(read)
   ],
   update: [asyncErrorBoundary(reservationExists),
-    validExistingProperties,
-    validNewProperties,
+    validExistingProperties(propertiesTemplate),
+    validBodyProperty(propertiesNew),
     validInitialStatus,
     validDate,
     validTime,
@@ -166,5 +163,4 @@ module.exports = {
     validPeople,
     asyncErrorBoundary(update)
   ]
-
 };

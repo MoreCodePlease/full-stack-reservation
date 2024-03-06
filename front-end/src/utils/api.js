@@ -68,20 +68,15 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
-/* Saves Reservation to the database 
-*/
 export async function createReservation(reservation, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations`);
   reservation.people = Number(reservation.people);
-  const url = `${API_BASE_URL}/reservations`;
   const options = {
-    method:"POST",
+    method: "POST",
     headers,
-    body:JSON.stringify( {data: reservation}),
+    body: JSON.stringify({ data: reservation }),
     signal
-  };
-  return await fetchJson(url,options,{});
-}
-
-export async function updateReservation(reservation,signal) {
-  
+  }
+  let data = await fetchJson(url, options);
+  return data;
 }

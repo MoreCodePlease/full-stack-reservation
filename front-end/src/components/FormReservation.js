@@ -17,8 +17,8 @@ function FormReservation ({reserve, isNew}) {
     event.preventDefault();
     if(isNew){
       try {
-        const booking = await createReservation(formData, abortController.signal)
-        history.push(`/dashboard/?date=${booking.reservation_date}`)
+        const booking = await createReservation(formData, abortController.signal);
+        history.push(`/dashboard/?date=${booking.reservation_date}`);
       } catch (error) {
         console.log(error);
       }
@@ -33,7 +33,7 @@ function FormReservation ({reserve, isNew}) {
 
   return(
     <div>
-      <form >
+      <form onSubmit={handleSubmit}>
         <label htmlFor="first_name">First Name:</label>
         <input 
         className="form-control"

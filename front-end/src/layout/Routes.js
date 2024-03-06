@@ -4,6 +4,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
+import useQuery from "../utils/useQuery";
 import ReservationNew from "../components/ReservationNew";
 
 /**
@@ -14,6 +15,11 @@ import ReservationNew from "../components/ReservationNew";
  * @returns {JSX.Element}
  */
 function Routes() {
+
+  let date = useQuery().get("date");
+  console.log(date);
+  if (!date) date = today();
+  
   return (
     <Switch>
       <Route exact={true} path="/">
@@ -26,7 +32,7 @@ function Routes() {
         <Redirect to={"/dashboard"} />
       </Route>
       <Route path="/dashboard">
-        <Dashboard date={today()} />
+        <Dashboard date={date} />
       </Route>
       <Route>
         <NotFound />
