@@ -1,9 +1,9 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import FormReservation from "./FormReservation";
+import FormRes from "./FormRes";
 
 
-function ReservationNew () {
+function NewRes () {
   const history = useHistory();
 
   const reserve = {
@@ -19,7 +19,7 @@ function ReservationNew () {
   return (
     <div>
       <h1>New Reservation</h1>
-      <FormReservation reserve={reserve} isNew={true}/>
+      <FormRes reserve={reserve} isNew={true}/>
     </div>
   )
 
@@ -27,4 +27,4 @@ function ReservationNew () {
 
 }
 
-export default ReservationNew;
+export default NewRes;

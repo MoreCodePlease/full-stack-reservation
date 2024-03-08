@@ -1,14 +1,16 @@
 import React, { useState }from "react";
 import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
+import { createReservation, updateReservation } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 
-function FormReservation ({reserve, isNew}) {
+function FormRes ({reserve, isNew}) {
   const history = useHistory();
   const [formData, setFormData] = useState({...reserve});
-  const [error, setError] = useState(undefined);
+  const [submitError, setSubmitError] = useState(undefined);
   
   const handleChange = ({target}) => {
-    setFormData({...formData, [target.name]: target.value});
+    const newVal =(target.name === "people")? Number(target.value): target.value;
+    setFormData({...formData, [target.name]: newVal});
   };
 
 
@@ -24,29 +26,30 @@ function FormReservation ({reserve, isNew}) {
       }
       
     } else {
-      const booking = await (formData, abortController.signal)
-        history.push(`/dashboard/?date=${booking.reservation_date}`)
+      try {
+        const booking = await updateReservation(formData, abortController.signal);
+        history.push(`/dashboard/?date=${booking.reservation_date}`);
+      } catch (error) {
+        console.log(error);
+      }
     }
-  
   }
-
 
   return(
     <div>
+      <ErrorAlert error={submitError} />
       <form onSubmit={handleSubmit}>
         <label htmlFor="first_name">First Name:</label>
-        <input 
-        className="form-control"
-        type="text"
-        name="first_name"
-        id="first_name"
-        value={formData.first_name}
-        onChange={handleChange}
-        required
+        <input className="form-control"
+          type="text"
+          name="first_name"
+          id="first_name"
+          value={formData.first_name}
+          onChange={handleChange}
+          required
         />
         <label htmlFor="last_name">Last Name:</label>
-        <input
-          className="form-control"
+        <input className="form-control"
           type="text"
           name="last_name"
           id="last_name"
@@ -54,9 +57,8 @@ function FormReservation ({reserve, isNew}) {
           onChange={handleChange}
           required
         />
-        <label>Callback Number:</label>
-        <input
-          className="form-control"
+        <label htmlFor="mobile_number">Callback Number:</label>
+        <input className="form-control"
           type="tel"
           name="mobile_number"
           id="mobile_number"
@@ -64,9 +66,8 @@ function FormReservation ({reserve, isNew}) {
           onChange={handleChange}
           required
         />
-        <label>Reservation Date:</label>
-        <input
-          className="form-control"
+        <label htmlFor="reservation_date">Reservation Date:</label>
+        <input className="form-control"
           type="date"
           placeholder="YYYY-MM-DD"
           pattern="\d{4}-\d{2}-\d{2}"
@@ -76,9 +77,8 @@ function FormReservation ({reserve, isNew}) {
           onChange={handleChange}
           required
         />
-        <label>Reservation Time:</label>
-        <input
-          className="form-control"
+        <label htmlFor="reservation_time">Reservation Time:</label>
+        <input className="form-control"
           type="time"
           placeholder="HH:MM"
           pattern="[0-9]{2}:[0-9]{2}"
@@ -88,9 +88,8 @@ function FormReservation ({reserve, isNew}) {
           onChange={handleChange}
           required
         />
-        <label>Size of Party:</label>
-        <input
-          className="form-control"
+        <label htmlFor="people">Size of Party:</label>
+        <input className="form-control"
           type="number"
           name="people"
           id="people"
@@ -98,17 +97,11 @@ function FormReservation ({reserve, isNew}) {
           onChange={handleChange}
           required
         />
-        <br></br>
-        <button
-          type="submit"
-          className="btn btn-primary"
-        >
+        <br />
+        <button type="submit" className="btn btn-primary" >
           Submit
         </button>
-        <button
-          className="btn btn-default"
-          onClick={() => history.push("/")}  
-        >
+        <button  className="btn btn-default" onClick={() => history.push("/")} >
           Cancel
         </button>
       </form>
@@ -116,4 +109,4 @@ function FormReservation ({reserve, isNew}) {
   )
 }
 
-export default FormReservation;
+export default FormRes;
