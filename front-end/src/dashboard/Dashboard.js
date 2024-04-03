@@ -32,7 +32,7 @@ function Dashboard({ date }) {
       .catch(setTablesError);
     return () => abortController.abort();
   }
-
+  console.log(tables);
   return (
     <main>
       <h1>Dashboard</h1>

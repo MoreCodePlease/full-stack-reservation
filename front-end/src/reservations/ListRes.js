@@ -40,8 +40,8 @@ function ListRes({reservations, date}) {
   });
   return (
     <div>
-      <table>
-        <thead>
+      <table className="table table-bordered table-striped">
+        <thead className="thead-dark">
           <tr>
             <th>Reservation Id</th>
             <th>First Name</th>

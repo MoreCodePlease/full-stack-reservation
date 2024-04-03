@@ -1,13 +1,14 @@
 import React, { useState }from "react";
 import { useHistory } from "react-router-dom";
 import { createTable } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 
 
 function FormTable () {
   const history = useHistory();
   const initTable = {table_name: "",capacity:""};
   const [formData, setFormData] = useState({...initTable});
-  const [error, setError] = useState(undefined);
+  const [errorTable, setErrorTable] = useState(false);
 
 
   const handleChange = ({target}) => {
@@ -19,15 +20,16 @@ function FormTable () {
     const abortController = new AbortController();
     event.preventDefault();
     try {
-      const table = await createTable(formData, abortController.signal);
+      await createTable(formData, abortController.signal);
       history.push(`/dashboard`);
     } catch (error) {
-      console.log(error);
+      setErrorTable(error);
     }
   }
 
   return (
     <div>
+      <ErrorAlert error={errorTable} />
       <form onSubmit={handleSubmit}>
         <label htmlFor="table_name">Table Name:</label>
         <input className="form-control"
@@ -43,17 +45,23 @@ function FormTable () {
           type="number"
           name="capacity"
           id="capacity"
+          min="1"
           value={formData.capacity}
           onChange={handleChange}
           required
         />
         <br />
-        <button> Submit </button>
-        <button> Cancel </button>
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          > Submit </button>
+        <button
+          className="btn btn-outline-danger btn-sm mr-1"
+          onClick={() => history.goBack()}
+        > Cancel </button>
       </form>
     </div>
   )
-
 }
 
 export default FormTable;

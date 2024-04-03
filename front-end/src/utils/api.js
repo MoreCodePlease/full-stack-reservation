@@ -97,6 +97,7 @@ export async function searchReservation(mobile_number, signal) {
 export async function updateReservation(reservation_id, reservation, signal) {
   const url = `${API_BASE_URL}/reservations/${reservation_id}/edit`;
   reservation.people = Number(reservation.people);
+  reservation.reservation_id =Number(reservation_id)
   const options = {
     method: "PUT",
     headers,

@@ -1,12 +1,18 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import FormTable from "./FormTable";
+import { createTable } from "../utils/api";
+
 
 function NewTable() {
+
   return (
     <div>
-      <h2>New Table</h2>
       <div>
+        <h1>New Table</h1>
+      </div>
+      <div>
+        <FormTable />
       </div>
     </div>
   )

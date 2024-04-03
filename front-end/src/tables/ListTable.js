@@ -1,29 +1,44 @@
-import React from "react";
-
+import React, { useState } from "react";
+import ErrorAlert from "../layout/ErrorAlert";
+import { finishTable } from "../utils/api";
 
 function ListTable({tables}) {
-  const list = tables.map((table,index) => {
+  const [errorTable, setErrorTable] = useState(false);
+
+  const handleFinish = async ({target}) => {
+    const abortController = new AbortController();
+    try {
+      await finishTable(target.table_id, abortController.signal);
+    } catch (error) {
+      setErrorTable(error);
+    }
+  }
+
+  const list = tables.map((item,index) => {
+    return (
     <tr key = {index}>
-      <td>{table.table_id}</td>
-      <td>{table.table_name}</td>
-      <td>{table.capacity}</td>
-      <td>{(table.reservation_id)? "Occupied": "Free"}</td>
+      <td>{item.table_id}</td>
+      <td>{item.table_name}</td>
+      <td>{item.capacity}</td>
+      <td>{(item.reservation_id)? "Occupied": "Free"}</td>
+      <td>{(item.reservation_id)? item.reservation_id: ""}</td>
       <td><button>Finish</button></td>
     </tr>
+    )
   })
-
 
   return (
     <div>
-      <table>
-        <thead>
+      <ErrorAlert error={errorTable} />
+      <table className="table table-bordered table-striped">
+        <thead className="thead-dark">
           <tr>
             <th>Table Id</th>
             <th>Table Name</th>
             <th>Capacity</th>
             <th>Table Status</th>
             <th>Reservation Id</th>
-            <th></th>
+            <th>Options</th>
           </tr>
         </thead>
         <tbody>

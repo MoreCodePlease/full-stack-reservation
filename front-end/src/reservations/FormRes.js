@@ -1,13 +1,19 @@
-import React, { useState }from "react";
+import React, { useState, useEffect }from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation, updateReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
+import { useParams } from "react-router-dom";
 
 function FormRes ({reserve, isNew}) {
+  const {res_id} = useParams();
   const history = useHistory();
   const [formData, setFormData] = useState({...reserve});
-  const [submitError, setSubmitError] = useState(undefined);
+  const [submitError, setSubmitError] = useState(null);
   
+useEffect(() => {
+  setFormData(reserve);
+},[reserve])
+
   const handleChange = ({target}) => {
     const newVal =(target.name === "people")? Number(target.value): target.value;
     setFormData({...formData, [target.name]: newVal});
@@ -22,15 +28,15 @@ function FormRes ({reserve, isNew}) {
         const booking = await createReservation(formData, abortController.signal);
         history.push(`/dashboard/?date=${booking.reservation_date}`);
       } catch (error) {
-        console.log(error);
+        setSubmitError(error);
       }
       
     } else {
       try {
-        const booking = await updateReservation(formData, abortController.signal);
+        const booking = await updateReservation(res_id, formData, abortController.signal);
         history.push(`/dashboard/?date=${booking.reservation_date}`);
       } catch (error) {
-        console.log(error);
+        setSubmitError(error);
       }
     }
   }

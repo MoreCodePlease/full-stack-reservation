@@ -15,17 +15,18 @@ function EditRes () {
   function loadReservation() {
     const abortController = new AbortController();
     setReservationError(null);
-    readReservation({ reservation_id }, abortController.signal)
+    readReservation(reservation_id, abortController.signal)
     .then(setReservation)
     .catch(setReservationError);
   }
 
   const reserve = {
+    //reservation_id: Number(reservation_id),
     first_name: reservation.first_name,
     last_name: reservation.last_name,
     mobile_number: reservation.mobile_number,
-    reservation_date:reservation.reservation_date.slice(0,10),
-    reservation_time:reservation.reservation_time.slice(0,5),
+    reservation_date:reservation.reservation_date,
+    reservation_time:reservation.reservation_time,
     people: reservation.people,
     status: reservation.status
   }
