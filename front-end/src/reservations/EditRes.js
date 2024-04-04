@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import FormRes from "./FormRes";
 import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";

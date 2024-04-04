@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 
 function ListRes({reservations, date}) {
-  const listStatus = ["booked", "seated"];
   const list = reservations.map((item, index) => {
     const butts = (
       <div>

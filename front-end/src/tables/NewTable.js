@@ -1,7 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import FormTable from "./FormTable";
-import { createTable } from "../utils/api";
 
 
 function NewTable() {

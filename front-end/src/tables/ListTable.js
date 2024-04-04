@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import ErrorAlert from "../layout/ErrorAlert";
 import { finishTable } from "../utils/api";
+import { useHistory } from "react-router-dom";
 
 function ListTable({tables}) {
+  const history = useHistory();
   const [errorTable, setErrorTable] = useState(false);
 
-  const handleFinish = async ({target}) => {
+  async function handleFinish(target) {
     const abortController = new AbortController();
     try {
       await finishTable(target.table_id, abortController.signal);
     } catch (error) {
       setErrorTable(error);
     }
+    history.push("/");
   }
 
   const list = tables.map((item,index) => {
@@ -22,7 +25,10 @@ function ListTable({tables}) {
       <td>{item.capacity}</td>
       <td>{(item.reservation_id)? "Occupied": "Free"}</td>
       <td>{(item.reservation_id)? item.reservation_id: ""}</td>
-      <td><button>Finish</button></td>
+      <td>
+        <button
+          onClick={() => handleFinish(item)}
+          >Finish</button></td>
     </tr>
     )
   })

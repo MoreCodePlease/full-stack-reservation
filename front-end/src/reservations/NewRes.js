@@ -1,10 +1,8 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import FormRes from "./FormRes";
 
 
 function NewRes () {
-  const history = useHistory();
 
   const reserve = {
     first_name: "",
@@ -22,8 +20,6 @@ function NewRes () {
       <FormRes reserve={reserve} isNew={true}/>
     </div>
   )
-
-
 
 }
 
