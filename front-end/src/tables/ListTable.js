@@ -16,7 +16,7 @@ function ListTable({tables}) {
     }
     history.push("/");
   }
-
+  console.log(tables)
   const list = tables.map((item,index) => {
     return (
     <tr key = {index}>
@@ -25,10 +25,10 @@ function ListTable({tables}) {
       <td>{item.capacity}</td>
       <td>{(item.reservation_id)? "Occupied": "Free"}</td>
       <td>{(item.reservation_id)? item.reservation_id: ""}</td>
-      <td>
-        <button
+      <td>{(item.reservation_id)? (<button
           onClick={() => handleFinish(item)}
-          >Finish</button></td>
+          >Finish</button>): null}
+        </td>
     </tr>
     )
   })
