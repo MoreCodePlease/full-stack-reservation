@@ -2,11 +2,8 @@ import React, { useState, useEffect }from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation, updateReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import { useParams } from "react-router-dom";
-import formatReservationTime from "../utils/format-reservation-time";
 
 function FormRes ({reserve, isNew}) {
-  const {res_id} = useParams();
   const history = useHistory();
   const [formData, setFormData] = useState({});
   const [submitError, setSubmitError] = useState(null);

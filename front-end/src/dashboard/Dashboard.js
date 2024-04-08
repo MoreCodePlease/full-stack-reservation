@@ -17,7 +17,7 @@ function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(false);
   const [tables, setTables] = useState([]);
-  const [tablesError, setTablesError] = useState([]);
+  const [tablesError, setTablesError] = useState(false);
   const history = useHistory();
 
   useEffect(loadDashboard, [date]);
@@ -65,7 +65,7 @@ function Dashboard({ date }) {
         <Link to={`/dashboard/?date=${previous(date)}`}> Previous </Link>
         <Link to={`/dashboard/?date=${next(date)}`}> Next </Link>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for: {date}</h4>        
+        <h4 className="mb-0">Reservations for: {date.slice(0,10)}</h4>        
       </div>
       <ErrorAlert error={reservationsError} />
       <ErrorAlert error={tablesError} />

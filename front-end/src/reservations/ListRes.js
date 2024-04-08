@@ -1,22 +1,50 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { updateReservationStatus } from "../utils/api";
 
 
 
 function ListRes({reservations, date}) {
+
+  async function handleCancel(reservation_id) {
+    const abortController= new AbortController();
+    const confirmWindow = window.confirm("Do you want to cancel this reservation? This cannot be undone.");
+    if(confirmWindow) {
+      try {
+        await updateReservationStatus(reservation_id, "cancelled", abortController.signal);  
+        window.location.reload();
+      } catch (error) {
+        
+      }
+      
+    }
+  }
+
   const list = reservations.map((item, index) => {
+    
+    if(item.status ==="finished" || item.status ==="cancelled") return null;
+    
     const butts = (
       <div>
         <Link to ={`/reservations/${item.reservation_id}/edit`} className="btn btn-outline-primary mx-1" >
         Edit</Link>
         <Link to={`/reservations/${item.reservation_id}/seat`} className="btn btn-outline-primary mx-1" >
         Seat</Link>
-        <button className="btn btn-danger" type="button">Cancel</button>
+        <button 
+          data-reservation-id-cancel={item.reservation_id} 
+          className="btn btn-danger" 
+          onClick={() => handleCancel(item.reservation_id)}
+          type="button">
+        Cancel</button>
       </div>
     )
     const noButts = (
       <div>
-        <button className="btn btn-danger" type="button">
+        <button 
+          data-reservation-id-cancel={item.reservation_id} 
+          className="btn btn-danger" 
+          onClick={() => handleCancel(item.reservation_id)}
+          type="button">
         Cancel</button>
       </div>
     )
@@ -50,6 +78,7 @@ function ListRes({reservations, date}) {
             <th>Reservation Time</th>
             <th>People</th>
             <th>status</th>
+            <th>Options</th>
           </tr>
         </thead>
         <tbody>

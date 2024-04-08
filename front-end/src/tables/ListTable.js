@@ -1,24 +1,6 @@
-import React, { useState } from "react";
-import ErrorAlert from "../layout/ErrorAlert";
-import { finishTable } from "../utils/api";
-import { useHistory } from "react-router-dom";
+import React from "react";
 
 function ListTable({tables, handleFinish }) {
-  const history = useHistory();
-  const [errorTable, setErrorTable] = useState(false);
-
-  /*async function handleFinish(target) {
-    const abortController = new AbortController();
-    const confirmWindow = window.confirm("Is this table ready to seat new guests? This cannot be undone.");
-    if(confirmWindow) {
-      try {
-        await finishTable(target.table_id, abortController.signal);
-      } catch (error) {
-        setErrorTable(error);
-      }
-      history.push("/");
-    }
-  }*/
 
   const list = tables.map((table,index) => {
     return (
@@ -39,7 +21,6 @@ function ListTable({tables, handleFinish }) {
 
   return (
     <div>
-      <ErrorAlert error={errorTable} />
       <table className="table table-bordered table-striped">
         <thead className="thead-dark">
           <tr>

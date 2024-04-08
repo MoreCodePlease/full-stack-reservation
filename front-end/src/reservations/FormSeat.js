@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { seatTable, updateReservationStatus } from "../utils/api";
 import { useHistory } from "react-router-dom";
+import ErrorAlert from "../layout/ErrorAlert";
 
 function FormSeat({tables, reservation_id}) {
   const history = useHistory();
@@ -37,6 +38,7 @@ function FormSeat({tables, reservation_id}) {
   });
   return (
     <div>
+      <ErrorAlert error={newError} />
       <form onSubmit={handleSubmit}>
         <label>Select Table:</label>
         <select name="table_id" onChange={handleChange}>

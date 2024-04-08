@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { listTables, readReservation } from "../utils/api";
 import FormSeat from "./FormSeat";
+import ErrorAlert from "../layout/ErrorAlert";
 
 function SeatRes() {
   const params = useParams();
-  const history = useHistory();
   const reservation_id = params.reservation_id;
   const [tables, setTables] = useState([]);
   const [errorTable, setErrorTable] = useState(false);
@@ -19,6 +19,7 @@ function SeatRes() {
 
   return (
     <div>
+      <ErrorAlert error={errorTable} />
       <h2>Seat Reservation:</h2>
       <h3>Reservation ID: {reservation_id}</h3>
       <h3>Capacity: {reservation.people}</h3>
@@ -27,4 +28,4 @@ function SeatRes() {
   )
 }
 
-export default SeatRes
+export default SeatRes;

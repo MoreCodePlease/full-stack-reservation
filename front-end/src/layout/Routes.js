@@ -21,7 +21,6 @@ import SeatRes from "../reservations/SeatRes";
 function Routes() {
 
   let date = useQuery().get("date");
-  console.log(date);
   if (!date) date = today();
   
   return (
@@ -48,6 +47,7 @@ function Routes() {
         <NewTable />
       </Route>
       <Route exact={true} path="/search">
+        <SearchRes />
       </Route>
       <Route>
         <NotFound />
