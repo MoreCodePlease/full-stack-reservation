@@ -3,30 +3,34 @@ import ErrorAlert from "../layout/ErrorAlert";
 import { finishTable } from "../utils/api";
 import { useHistory } from "react-router-dom";
 
-function ListTable({tables}) {
+function ListTable({tables, handleFinish }) {
   const history = useHistory();
   const [errorTable, setErrorTable] = useState(false);
 
-  async function handleFinish(target) {
+  /*async function handleFinish(target) {
     const abortController = new AbortController();
-    try {
-      await finishTable(target.table_id, abortController.signal);
-    } catch (error) {
-      setErrorTable(error);
+    const confirmWindow = window.confirm("Is this table ready to seat new guests? This cannot be undone.");
+    if(confirmWindow) {
+      try {
+        await finishTable(target.table_id, abortController.signal);
+      } catch (error) {
+        setErrorTable(error);
+      }
+      history.push("/");
     }
-    history.push("/");
-  }
-  console.log(tables)
-  const list = tables.map((item,index) => {
+  }*/
+
+  const list = tables.map((table,index) => {
     return (
     <tr key = {index}>
-      <td>{item.table_id}</td>
-      <td>{item.table_name}</td>
-      <td>{item.capacity}</td>
-      <td>{(item.reservation_id)? "Occupied": "Free"}</td>
-      <td>{(item.reservation_id)? item.reservation_id: ""}</td>
-      <td>{(item.reservation_id)? (<button
-          onClick={() => handleFinish(item)}
+      <td>{table.table_id}</td>
+      <td>{table.table_name}</td>
+      <td>{table.capacity}</td>
+      <td data-table-id-status={table.table_id}>{(table.reservation_id)? "occupied": "free"}</td>
+      <td>{(table.reservation_id)? table.reservation_id: ""}</td>
+      <td>{(table.reservation_id)? (<button
+          data-table-id-finish={table.table_id}
+          onClick={() => handleFinish(table.table_id)}
           >Finish</button>): null}
         </td>
     </tr>

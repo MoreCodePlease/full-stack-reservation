@@ -3,11 +3,12 @@ import { useHistory } from "react-router-dom";
 import { createReservation, updateReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { useParams } from "react-router-dom";
+import formatReservationTime from "../utils/format-reservation-time";
 
 function FormRes ({reserve, isNew}) {
   const {res_id} = useParams();
   const history = useHistory();
-  const [formData, setFormData] = useState({...reserve});
+  const [formData, setFormData] = useState({});
   const [submitError, setSubmitError] = useState(null);
   
 useEffect(() => {
@@ -33,14 +34,14 @@ useEffect(() => {
       
     } else {
       try {
-        const booking = await updateReservation(res_id, formData, abortController.signal);
+        const booking = await updateReservation(formData.reservation_id, formData, abortController.signal);
         history.push(`/dashboard/?date=${booking.reservation_date}`);
       } catch (error) {
         setSubmitError(error);
       }
     }
   }
-
+  console.log(formData.reservation_time)
   return(
     <div>
       <ErrorAlert error={submitError} />

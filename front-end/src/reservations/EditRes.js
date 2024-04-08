@@ -12,23 +12,27 @@ function EditRes () {
   
   useEffect(loadReservation,[reservation_id]);
 
-  function loadReservation() {
+  async function loadReservation() {
     const abortController = new AbortController();
     setReservationError(null);
-    readReservation(reservation_id, abortController.signal)
-    .then(setReservation)
-    .catch(setReservationError);
+    try {
+      let result = await readReservation(reservation_id, abortController.signal);
+      result.reservation_time = result.reservation_time.slice(0,5);
+      setReservation(result);
+    } catch (error) {
+      setReservationError(error);
+    }
   }
 
   const reserve = {
-    //reservation_id: Number(reservation_id),
+    reservation_id: reservation_id,
     first_name: reservation.first_name,
     last_name: reservation.last_name,
     mobile_number: reservation.mobile_number,
-    reservation_date:reservation.reservation_date,
-    reservation_time:reservation.reservation_time,
+    reservation_date: reservation.reservation_date,
+    reservation_time: reservation.reservation_time,
     people: reservation.people,
-    status: reservation.status
+    status: reservation.status,
   }
 
   return (

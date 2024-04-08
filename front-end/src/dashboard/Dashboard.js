@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, listTables, finishTable } from "../utils/api";
 import { previous, next } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
 import { Link } from "react-router-dom";
 import ListRes from "../reservations/ListRes";
 import ListTable from "../tables/ListTable";
+import { useHistory } from "react-router-dom";
 
 /**
  * Defines the dashboard page.
@@ -14,12 +15,13 @@ import ListTable from "../tables/ListTable";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
+  const [reservationsError, setReservationsError] = useState(false);
   const [tables, setTables] = useState([]);
   const [tablesError, setTablesError] = useState([]);
+  const history = useHistory();
 
   useEffect(loadDashboard, [date]);
-
+  useEffect(loadTables, []);
   function loadDashboard() {
     console.log(date);
     const abortController = new AbortController();
@@ -27,11 +29,35 @@ function Dashboard({ date }) {
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
+    //listTables(abortController.signal)
+    //  .then(setTables)
+    //  .catch(setTablesError);
+    return () => abortController.abort();
+  }
+
+  function loadTables() {
+    const abortController = new AbortController();
     listTables(abortController.signal)
       .then(setTables)
       .catch(setTablesError);
     return () => abortController.abort();
   }
+
+  const handleFinish = async (table_id) => {
+    const abortController = new AbortController();
+    const confirmWindow = window.confirm("Is this table ready to seat new guests? This cannot be undone.");
+    if(confirmWindow) {
+      try {
+        await finishTable(table_id, abortController.signal);
+        loadDashboard();
+        loadTables();
+      } catch (error) {
+        setReservationsError(error);
+      }
+      history.push("/");
+    }
+  }
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -45,7 +71,7 @@ function Dashboard({ date }) {
       <ErrorAlert error={tablesError} />
       
       <ListRes reservations={reservations} date={date} />
-      <ListTable tables={tables} />
+      <ListTable tables={tables} handleFinish={handleFinish} />
       <br />
       <p>{JSON.stringify(reservations)}</p>
       <br />
@@ -53,6 +79,5 @@ function Dashboard({ date }) {
     </main>
   );
 }
-
 
 export default Dashboard;
