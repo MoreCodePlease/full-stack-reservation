@@ -5,13 +5,22 @@ import ErrorAlert from "../layout/ErrorAlert";
 
 function FormRes ({reserve, isNew}) {
   const history = useHistory();
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    mobile_number: "",
+    reservation_date: "",
+    reservation_time: "",
+    people: "",
+    status: "",
+    reservation_id: null
+  });
   const [submitError, setSubmitError] = useState(null);
   
 useEffect(() => {
   setFormData(reserve);
 },[reserve])
-
+console.log(reserve)
   const handleChange = ({target}) => {
     const newVal =(target.name === "people")? Number(target.value): target.value;
     setFormData({...formData, [target.name]: newVal});
@@ -43,71 +52,79 @@ useEffect(() => {
     <div>
       <ErrorAlert error={submitError} />
       <form onSubmit={handleSubmit}>
-        <label htmlFor="first_name">First Name:</label>
+        <label htmlFor="first_name">
+          First Name:</label>
         <input className="form-control"
           type="text"
           name="first_name"
           id="first_name"
-          value={formData.first_name}
+          value={formData.first_name ||''}
           onChange={handleChange}
           required
         />
-        <label htmlFor="last_name">Last Name:</label>
+        <label htmlFor="last_name">
+          Last Name:</label>
         <input className="form-control"
           type="text"
           name="last_name"
           id="last_name"
-          value={formData.last_name}
+          value={formData.last_name ||''}
           onChange={handleChange}
           required
         />
-        <label htmlFor="mobile_number">Callback Number:</label>
+        <label htmlFor="mobile_number">
+          Callback Number:</label>
         <input className="form-control"
           type="tel"
           name="mobile_number"
           id="mobile_number"
-          value={formData.mobile_number}
+          value={formData.mobile_number ||''}
           onChange={handleChange}
           required
         />
-        <label htmlFor="reservation_date">Reservation Date:</label>
+        <label htmlFor="reservation_date">
+          Reservation Date:</label>
         <input className="form-control"
           type="date"
           placeholder="YYYY-MM-DD"
           pattern="\d{4}-\d{2}-\d{2}"
           name="reservation_date"
           id="reservation_date"
-          value={formData.reservation_date}
+          value={formData.reservation_date ||''}
           onChange={handleChange}
           required
         />
-        <label htmlFor="reservation_time">Reservation Time:</label>
+        <label htmlFor="reservation_time">
+          Reservation Time:</label>
         <input className="form-control"
           type="time"
           placeholder="HH:MM"
           pattern="[0-9]{2}:[0-9]{2}"
           name="reservation_time"
           id="reservation_time"
-          value={formData.reservation_time}
+          value={formData.reservation_time ||''}
           onChange={handleChange}
           required
         />
-        <label htmlFor="people">Size of Party:</label>
+        <label htmlFor="people">
+          Size of Party:</label>
         <input className="form-control"
           type="number"
           name="people"
           id="people"
-          value={formData.people}
+          value={formData.people ||''}
           onChange={handleChange}
           required
         />
         <br />
-        <button type="submit" className="btn btn-primary" >
-          Submit
-        </button>
-        <button  className="btn btn-default" onClick={() => history.push("/")} >
-          Cancel
-        </button>
+        <button 
+          type="submit" 
+          className="btn btn-primary" 
+          >Submit</button>
+        <button  
+          className="btn btn-default" 
+          onClick={() => history.push("/")} 
+          >Cancel</button>
       </form>
     </div>
   )

@@ -15,7 +15,7 @@ function SeatRes() {
     const abortController = new AbortController();
     listTables(abortController.signal).then(setTables).catch(setErrorTable);
     readReservation(reservation_id,abortController.signal).then(setReservation).catch(setErrorTable);
-  },[])
+  },[reservation_id])
 
   return (
     <div>

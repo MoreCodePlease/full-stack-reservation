@@ -49,7 +49,7 @@ function ListRes({reservations, date}) {
       </div>
     )
     return (
-      <tr key={index} className="res-text table-row">
+      <tr key={item.reservation_id} className="res-text table-row">
         <td>{item.reservation_id}</td>
         <td>{item.first_name}</td>
         <td>{item.last_name}</td>

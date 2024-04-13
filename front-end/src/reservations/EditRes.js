@@ -6,23 +6,25 @@ import ErrorAlert from "../layout/ErrorAlert";
 
 
 function EditRes () {
-  const {reservation_id} = useParams();
+  const params = useParams();
+  const reservation_id = params.reservation_id;
   const [reservation, setReservation] = useState([]);
   const [reservationError, setReservationError] = useState(null);
   
-  useEffect(loadReservation,[reservation_id]);
-
-  async function loadReservation() {
+  useEffect(() => {
     const abortController = new AbortController();
-    setReservationError(null);
-    try {
-      let result = await readReservation(reservation_id, abortController.signal);
-      result.reservation_time = result.reservation_time.slice(0,5);
-      setReservation(result);
-    } catch (error) {
-      setReservationError(error);
-    }
-  }
+    readReservation(reservation_id, abortController.signal).then((response) => {
+      setReservation({
+        first_name: response.first_name,
+        last_name: response.last_name,
+        mobile_number: response.mobile_number,
+        reservation_date: response.reservation_date.slice(0, 10),
+        reservation_time: response.reservation_time.slice(0, 5),
+        people: response.people,
+        status: response.status,
+      })
+    }).catch(setReservationError);
+  },[reservation_id]);
 
   const reserve = {
     reservation_id: reservation_id,
