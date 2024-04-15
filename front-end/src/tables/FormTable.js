@@ -31,8 +31,7 @@ function FormTable () {
     <div>
       <ErrorAlert error={errorTable} />
       <form onSubmit={handleSubmit}>
-        <label htmlFor="table_name">Table Name:</label>
-        <input className="form-control"
+        <label htmlFor="table_name">Table Name:<input className="form-control"
           type="text"
           name="table_name"
           id="table_name"
@@ -40,7 +39,9 @@ function FormTable () {
           onChange={handleChange}
           required
         />
-        <label htmlFor="capacity">Capacity:</label>
+        </label>
+        <br />
+        <label htmlFor="capacity">Capacity:
         <input className="form-control"
           type="number"
           name="capacity"
@@ -49,14 +50,15 @@ function FormTable () {
           value={formData.capacity}
           onChange={handleChange}
           required
-        />
+        /></label>
+        
         <br />
         <button 
           type="submit" 
-          className="btn btn-primary"
+          className="btn btn-sm btn-outline-primary"
           > Submit </button>
         <button
-          className="btn btn-outline-danger btn-sm mr-1"
+          className="btn btn-sm btn-outline-secondary"
           onClick={() => history.goBack()}
         > Cancel </button>
       </form>

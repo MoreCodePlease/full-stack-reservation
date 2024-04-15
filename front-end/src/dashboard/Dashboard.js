@@ -56,8 +56,10 @@ function Dashboard({ date }) {
   return (
     <main>
       <h1>Dashboard</h1>
-        <div className="btn-group me-2">
-          <button onClick={() => history.push(`/dashboard`)} className="btn btn-outline-dark btn m-0 mt-1 float-right"> Today </button>
+        <div className="btn-group ">
+        <button onClick={() => history.push(`/dashboard`)} className="btn btn-outline-dark btn m-0 mt-1 float-right"> Today </button>
+        </div>
+        <div className="btn-group m-1">
           <button onClick={() => history.push(`/dashboard/?date=${previous(date)}`)} className="btn btn-outline-dark btn m-0 mt-1 float-right"> Previous </button>
           <button onClick={() => history.push(`/dashboard?date=${next(date)}`)} className="btn btn-outline-dark btn m-0 mt-1 float-right" >Next </button>
         </div>
