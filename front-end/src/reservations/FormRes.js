@@ -20,7 +20,6 @@ function FormRes ({reserve, isNew}) {
 useEffect(() => {
   setFormData(reserve);
 },[reserve])
-console.log(reserve)
   const handleChange = ({target}) => {
     const newVal =(target.name === "people")? Number(target.value): target.value;
     setFormData({...formData, [target.name]: newVal});
@@ -33,7 +32,7 @@ console.log(reserve)
     if(isNew){
       try {
         const booking = await createReservation(formData, abortController.signal);
-        history.push(`/dashboard/?date=${booking.reservation_date}`);
+        history.push(`/dashboard/?date=${booking.reservation_date.slice(0,10)}`);
       } catch (error) {
         setSubmitError(error);
       }
@@ -47,7 +46,7 @@ console.log(reserve)
       }
     }
   }
-  console.log(formData.reservation_time)
+  
   return(
     <div>
       <ErrorAlert error={submitError} />

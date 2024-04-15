@@ -25,32 +25,22 @@ function ListRes({reservations, date}) {
     if(item.status ==="finished" || item.status ==="cancelled") return null;
     
     const butts = (
-      <div>
-        <Link to ={`/reservations/${item.reservation_id}/edit`} className="btn btn-outline-primary mx-1" >
-        Edit</Link>
-        <Link to={`/reservations/${item.reservation_id}/seat`} className="btn btn-outline-primary mx-1" >
+      <div className="">
+        <Link to={`/reservations/${item.reservation_id}/seat`} className="btn btn-outline-primary btn-sm" >
         Seat</Link>
+        <Link to ={`/reservations/${item.reservation_id}/edit`} className="btn btn-outline-secondary btn-sm" >
+        Edit</Link>
         <button 
           data-reservation-id-cancel={item.reservation_id} 
-          className="btn btn-danger" 
+          className="btn btn-danger btn-sm" 
           onClick={() => handleCancel(item.reservation_id)}
           type="button">
         Cancel</button>
       </div>
     )
-    const noButts = (
-      <div>
-        <button 
-          data-reservation-id-cancel={item.reservation_id} 
-          className="btn btn-danger" 
-          onClick={() => handleCancel(item.reservation_id)}
-          type="button">
-        Cancel</button>
-      </div>
-    )
+
     return (
       <tr key={item.reservation_id} className="res-text table-row">
-        <td>{item.reservation_id}</td>
         <td>{item.first_name}</td>
         <td>{item.last_name}</td>
         <td>{item.mobile_number}</td>
@@ -59,7 +49,7 @@ function ListRes({reservations, date}) {
         <td>{item.people}</td>
         <td data-reservation-id-status={item.reservation_id}>{item.status}</td>
         <td>
-          {(item.status === "booked")?butts:noButts}
+          {(item.status === "booked")?butts:null}
         </td>
       </tr>
     )
@@ -70,7 +60,7 @@ function ListRes({reservations, date}) {
       <table className="table table-bordered table-striped">
         <thead className="thead-dark">
           <tr>
-            <th>Reservation Id</th>
+            
             <th>First Name</th>
             <th>Last Name</th>
             <th>Phone Number</th>

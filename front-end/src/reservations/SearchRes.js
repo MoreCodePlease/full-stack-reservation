@@ -23,7 +23,6 @@ function SearchRes() {
       const result = await searchReservation(mobile_number.replace(/-/g, ''));
       setSubResult(true);
       setSearchResult(result);
-      console.log(result);
     } catch (error) {
       setSearchError(error);
     }

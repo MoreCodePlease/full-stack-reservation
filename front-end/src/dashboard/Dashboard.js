@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { listReservations, listTables, finishTable } from "../utils/api";
 import { previous, next } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
-import { Link } from "react-router-dom";
 import ListRes from "../reservations/ListRes";
 import ListTable from "../tables/ListTable";
 import { useHistory } from "react-router-dom";
@@ -23,7 +22,6 @@ function Dashboard({ date }) {
   useEffect(loadDashboard, [date]);
   useEffect(loadTables, []);
   function loadDashboard() {
-    console.log(date);
     const abortController = new AbortController();
     setReservationsError(null);
     listReservations({ date }, abortController.signal)
@@ -58,9 +56,12 @@ function Dashboard({ date }) {
   return (
     <main>
       <h1>Dashboard</h1>
-        <Link to={`/dashboard`}> Today </Link>
-        <Link to={`/dashboard/?date=${previous(date)}`}> Previous </Link>
-        <Link to={`/dashboard/?date=${next(date)}`}> Next </Link>
+        <div className="btn-group me-2">
+          <button onClick={() => history.push(`/dashboard`)} className="btn btn-outline-dark btn m-0 mt-1 float-right"> Today </button>
+          <button onClick={() => history.push(`/dashboard/?date=${previous(date)}`)} className="btn btn-outline-dark btn m-0 mt-1 float-right"> Previous </button>
+          <button onClick={() => history.push(`/dashboard?date=${next(date)}`)} className="btn btn-outline-dark btn m-0 mt-1 float-right" >Next </button>
+        </div>
+        
       <div className="d-md-flex mb-3">
         <h4 className="mb-0">Reservations for: {date.slice(0,10)}</h4>        
       </div>
